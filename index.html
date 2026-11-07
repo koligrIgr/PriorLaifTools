@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4F81BD">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Инструменты">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Мои инструменты</title>
+<style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; display: flex; flex-direction: column; }
+
+    header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px;
+             padding: 12px 14px; padding-top: calc(12px + env(safe-area-inset-top));
+             background: #4F81BD; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    header h1 { font-size: 18px; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #back-btn { display: none; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 22px;
+                width: 40px; height: 40px; border-radius: 10px; cursor: pointer; line-height: 1; }
+    #back-btn.visible { display: block; }
+
+    main { flex: 1; overflow-y: auto; padding: 16px 14px; padding-bottom: calc(24px + env(safe-area-inset-bottom));
+            width: 100%; max-width: 700px; margin: 0 auto; }
+
+    /* ---------- Главный экран: карточки программ ---------- */
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .card { display: block; background: #fff; border-radius: 14px; padding: 18px 14px; text-decoration: none; color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s; }
+    .card:active { transform: scale(0.97); }
+    .card-icon { font-size: 34px; margin-bottom: 10px; }
+    .card-title { font-weight: bold; font-size: 15px; margin-bottom: 4px; }
+    .card-desc { font-size: 12px; color: #888; line-height: 1.4; }
+    .empty-hint { text-align: center; color: #999; margin-top: 40px; font-size: 14px; line-height: 1.6; }
+
+    /* ---------- Экран программы (калькулятор) ---------- */
+    .prog-title { font-size: 17px; font-weight: bold; color: #333; margin: 0 0 14px; }
+    .main-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+    @media (max-width: 560px) { .main-inputs { grid-template-columns: repeat(2, 1fr); } }
+    .input-group { min-width: 0; }
+    label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; font-size: 13px; }
+    input { width: 100%; padding: 10px 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; }
+
+    .grid-months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 10px; margin-bottom: 16px;
+                   padding: 12px; background: #f9f9f9; border-radius: 10px; border: 1px solid #eee;
+                   max-height: 260px; overflow-y: auto; }
+    @media (max-width: 560px) { .grid-months { grid-template-columns: repeat(3, 1fr); } }
+    .grid-months .input-group { margin: 0; }
+    .grid-months label { font-size: 11px; color: #888; margin-bottom: 2px; display: block; text-align: center; }
+    .grid-months input { padding: 8px 4px; font-size: 16px; text-align: center; }
+
+    .bulk-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .bulk-row > label { margin: 0; }
+    .bulk-controls { display: flex; gap: 6px; align-items: center; flex: 1; max-width: 220px; }
+    .bulk-controls input { padding: 8px; font-size: 16px; }
+    button.fill-btn { background: #6c757d; font-size: 14px; padding: 9px 12px; white-space: nowrap; }
+
+    button { flex: 1; padding: 16px; background: #4F81BD; color: white; border: none; border-radius: 10px;
+             font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.2s; min-height: 48px; }
+    button:active { transform: scale(0.98); }
+    button.calc-btn { position: sticky; bottom: calc(8px + env(safe-area-inset-bottom)); box-shadow: 0 4px 12px rgba(79,129,189,0.4); z-index: 10; }
+
+    .results { margin-top: 20px; padding: 18px; background: #e2efda; border-radius: 10px; border: 1px solid #c5e0b4; display: none; }
+    .result-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; gap: 10px; }
+    .result-row span:last-child { font-weight: bold; text-align: right; white-space: nowrap; }
+    .result-row.total { font-size: 20px; font-weight: bold; margin-top: 15px; padding-top: 15px;
+                        border-top: 1px dashed #999; color: #2e5c1a; }
+    .note { font-size: 12px; color: #888; margin-top: 15px; text-align: center; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+    <button id="back-btn" onclick="goHome()">‹</button>
+    <h1 id="app-title">Мои инструменты</h1>
+</header>
+
+<main id="view"></main>
+
+<script>
+/* =====================================================================
+   РЕЕСТР ПРОГРАММ
+   Чтобы добавить новую программу, скопируйте блок ниже и измените
+   id, title, icon, description и функцию render(el).
+   Функция render получает контейнер el и рисует в нём интерфейс.
+   ===================================================================== */
+const PROGRAMS = [
+    {
+        id: 'nsj-calc',
+        title: 'Калькулятор НСЖ',
+        icon: '🛡️',
+        description: 'Накопительное страхование жизни: взносы, нагрузка, вычет 13%',
+        render: renderNsjCalc
+    }
+    // <-- Новые программы добавляйте сюда, через запятую:
+    // ,{ id: 'my-new-tool', title: 'Новый инструмент', icon: '🧮', description: '...', render: renderMyTool }
+];
+
+/* ==================== НАВИГАЦИЯ ==================== */
+const view = document.getElementById('view');
+const backBtn = document.getElementById('back-btn');
+const titleEl = document.getElementById('app-title');
+const HOME_TITLE = 'Мои инструменты';
+
+function goHome() { location.hash = ''; }
+
+function showHome() {
+    titleEl.textContent = HOME_TITLE;
+    backBtn.classList.remove('visible');
+    if (PROGRAMS.length === 0) {
+        view.innerHTML = '<div class="empty-hint">Программ пока нет.<br>Добавьте их в реестр PROGRAMS в коде.</div>';
+        return;
+    }
+    view.innerHTML = '<div class="grid-cards">' + PROGRAMS.map(p =>
+        '<a class="card" href="#' + p.id + '">' +
+            '<div class="card-icon">' + p.icon + '</div>' +
+            '<div class="card-title">' + p.title + '</div>' +
+            (p.description ? '<div class="card-desc">' + p.description + '</div>' : '') +
+        '</a>'
+    ).join('') + '</div>';
+}
+
+function openProgram(id) {
+    const p = PROGRAMS.find(x => x.id === id);
+    if (!p) { showHome(); return; }
+    titleEl.textContent = p.title;
+    backBtn.classList.add('visible');
+    view.innerHTML = '<h2 class="prog-title">' + p.icon + ' ' + p.title + '</h2><div id="prog-body"></div>';
+    p.render(document.getElementById('prog-body'));
+}
+
+function route() {
+    const id = decodeURIComponent(location.hash.replace('#', ''));
+    if (id) openProgram(id); else showHome();
+    view.scrollTop = 0;
+}
+window.addEventListener('hashchange', route);
+
+/* ==================== ПРОГРАММА: Калькулятор НСЖ ==================== */
+function renderNsjCalc(el) {
+    el.innerHTML = `
+        <div class="main-inputs">
+            <div class="input-group">
+                <label>Первый взнос (BYN):</label>
+                <input type="number" inputmode="decimal" id="first" value="1000">
+            </div>
+            <div class="input-group">
+                <label>Период взносов (мес.):</label>
+                <input type="number" inputmode="numeric" id="pay_months" value="24">
+            </div>
+            <div class="input-group">
+                <label>Общий срок (мес.):</label>
+                <input type="number" inputmode="numeric" id="total_months" value="36">
+            </div>
+            <div class="input-group">
+                <label>Нагрузка (%):</label>
+                <input type="number" inputmode="decimal" id="load" value="7.9" step="0.1">
+            </div>
+        </div>
+
+        <div class="bulk-row">
+            <label>Суммы ежемесячных взносов (BYN):</label>
+            <div class="bulk-controls">
+                <input type="number" inputmode="decimal" id="bulk_amount" placeholder="Сумма">
+                <button class="fill-btn" id="fill-btn">Заполнить все</button>
+            </div>
+        </div>
+
+        <div class="grid-months" id="months-grid"></div>
+
+        <button class="calc-btn" id="calc-btn">Рассчитать</button>
+
+        <div class="results" id="results">
+            <div class="result-row"><span>Всего вложено (сумма взносов):</span> <span id="res-total">0</span></div>
+            <div class="result-row"><span>Выплата от страховой:</span> <span id="res-payout">0</span></div>
+            <div class="result-row"><span>Налоговый вычет (13%):</span> <span id="res-tax">0</span></div>
+            <div class="result-row total"><span>Чистая прибыль:</span> <span id="res-profit">0</span></div>
+        </div>
+
+        <div class="note">Поля создаются только для периода взносов. Проценты (8%) продолжают начисляться до конца общего срока.</div>
+    `;
+
+    const $ = sel => el.querySelector(sel);
+
+    function generateFields() {
+        const payMonths = parseInt($('#pay_months').value) || 0;
+        const grid = $('#months-grid');
+        grid.innerHTML = '';
+        for (let i = 1; i <= payMonths; i++) {
+            const div = document.createElement('div');
+            div.className = 'input-group';
+            const label = document.createElement('label');
+            label.innerText = i + ' мес.';
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.inputMode = 'decimal';
+            input.id = 'm_' + i;
+            input.value = '100';
+            div.appendChild(label);
+            div.appendChild(input);
+            grid.appendChild(div);
+        }
+    }
+
+    function fillAll() {
+        const val = parseFloat($('#bulk_amount').value) || 0;
+        const payMonths = parseInt($('#pay_months').value) || 0;
+        for (let i = 1; i <= payMonths; i++) {
+            const input = el.querySelector('#m_' + i);
+            if (input) input.value = val;
+        }
+    }
+
+    function calculate() {
+        const first = parseFloat($('#first').value) || 0;
+        const payMonths = parseInt($('#pay_months').value) || 0;
+        const totalMonths = parseInt($('#total_months').value) || 0;
+        const loadPercent = parseFloat($('#load').value) || 0;
+
+        const load = loadPercent / 100;
+        const annualRate = 0.08;
+        const monthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
+
+        let totalInvested = first;
+
+        // Первый взнос растёт весь ОБЩИЙ срок
+        const fvFirst = first * (1 - load) * Math.pow(1 + monthlyRate, totalMonths);
+
+        // Ежемесячные взносы растут до конца ОБЩЕГО СРОКА
+        let fvMonthlyTotal = 0;
+        for (let i = 1; i <= payMonths; i++) {
+            const amount = parseFloat((el.querySelector('#m_' + i) || {}).value) || 0;
+            totalInvested += amount;
+            const netAmount = amount * (1 - load);
+            let monthsToGrow = totalMonths - i + 1;
+            if (monthsToGrow < 0) monthsToGrow = 0;
+            fvMonthlyTotal += netAmount * Math.pow(1 + monthlyRate, monthsToGrow);
+        }
+
+        const finalPayout = fvFirst + fvMonthlyTotal;
+        const taxDeduction = totalInvested * 0.13;
+        const netProfit = (finalPayout - totalInvested) + taxDeduction;
+
+        $('#results').style.display = 'block';
+        $('#res-total').textContent = totalInvested.toFixed(2) + ' BYN';
+        $('#res-payout').textContent = finalPayout.toFixed(2) + ' BYN';
+        $('#res-tax').textContent = taxDeduction.toFixed(2) + ' BYN';
+        $('#res-profit').textContent = netProfit.toFixed(2) + ' BYN';
+        $('#results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    $('#pay_months').addEventListener('change', () => { generateFields(); });
+    $('#fill-btn').addEventListener('click', fillAll);
+    $('#calc-btn').addEventListener('click', calculate);
+
+    generateFields();
+    calculate();
+}
+
+/* ==================== PWA: установка и офлайн ==================== */
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+route();
+</script>
+</body>
+</html>
