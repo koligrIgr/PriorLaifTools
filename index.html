@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="color-scheme" content="light">
 <meta name="theme-color" content="#4F81BD">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,25 +16,36 @@
 <title>Мои инструменты</title>
 <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
     html, body { height: 100%; }
-    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; display: flex; flex-direction: column; }
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7f6;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+    }
+    button, input, select, textarea { touch-action: manipulation; font-family: inherit; }
 
     header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px;
              padding: 12px 14px; padding-top: calc(12px + env(safe-area-inset-top));
              background: #4F81BD; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     header h1 { font-size: 18px; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #back-btn { display: none; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 22px;
-                width: 40px; height: 40px; border-radius: 10px; cursor: pointer; line-height: 1; }
+        #back-btn { display: none; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 22px;
+                width: 40px; height: 40px; border-radius: 10px; cursor: pointer; line-height: 1; flex-shrink: 0; }
     #back-btn.visible { display: block; }
+    #back-btn:active { background: rgba(255,255,255,0.28); }
 
-    main { flex: 1; overflow-y: auto; padding: 16px 14px; padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    main { flex: 1; overflow-y: auto; padding: 16px 14px; padding-bottom: calc(100px + env(safe-area-inset-bottom));
             width: 100%; max-width: 700px; margin: 0 auto; }
 
     /* ---------- Главный экран: карточки программ ---------- */
     .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-    .card { display: block; background: #fff; border-radius: 14px; padding: 18px 14px; text-decoration: none; color: #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s; }
-    .card:active { transform: scale(0.97); }
+    .card { display: block; background: #fff; border-radius: 14px; padding: 16px 14px; text-decoration: none; color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s, background 0.15s; }
+    .card:active { transform: scale(0.96); background: #f5f7fa; }
+    @media (max-width: 400px) { .grid-cards { gap: 10px; } }
     .card-icon { font-size: 34px; margin-bottom: 10px; }
     .card-title { font-weight: bold; font-size: 15px; margin-bottom: 4px; }
     .card-desc { font-size: 12px; color: #888; line-height: 1.4; }
@@ -50,6 +63,7 @@
                    padding: 12px; background: #f9f9f9; border-radius: 10px; border: 1px solid #eee;
                    max-height: 260px; overflow-y: auto; }
     @media (max-width: 560px) { .grid-months { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 380px) { .grid-months { grid-template-columns: repeat(2, 1fr); } }
     .grid-months .input-group { margin: 0; }
     .grid-months label { font-size: 11px; color: #888; margin-bottom: 2px; display: block; text-align: center; }
     .grid-months input { padding: 8px 4px; font-size: 16px; text-align: center; }
@@ -78,15 +92,58 @@
     @media (min-width: 560px) { .calc-grid { grid-template-columns: repeat(3, 1fr); } }
     .calc-conditional { margin-bottom: 12px; }
 
-    /* ---------- Дети в приоритете ---------- */
-    .results-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-    .results-table th { background: #90caf9; color: #000; padding: 10px; text-align: left; border: 1px solid #64b5f6; }
-    .results-table td { padding: 10px; border: 1px solid #bbdefb; }
-    .results-table .highlight { font-weight: bold; font-size: 16px; }
-    .results-table .bg-blue { background: #e3f2fd; }
-    .results-table .bg-total { background: #c8e6c9; font-weight: bold; color: #1b5e20; font-size: 16px; }
-    .text-right { text-align: right; }
-    .table-wrap { overflow-x: auto; margin-top: 10px; }
+    /* ---------- Дети в приоритете — карточки ---------- */
+    .protection-section { margin-bottom: 14px; }
+    .protection-section-title {
+        font-size: 11px; font-weight: bold; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #fff; background: #4F81BD;
+        padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
+    }
+    .protection-section-title.additional { background: #5a9bd4; }
+
+    .protection-card {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 10px; padding: 12px 14px; background: #fff;
+        border-radius: 10px; margin-bottom: 8px;
+        border: 1px solid #e8ecf1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .protection-info { flex: 1; min-width: 0; }
+    .protection-name { font-size: 13px; color: #333; font-weight: 600; line-height: 1.3; margin-bottom: 3px; }
+    .protection-meta { font-size: 11px; color: #888; }
+    .protection-value {
+        font-size: 15px; font-weight: bold; color: #0d47a1;
+        white-space: nowrap; text-align: right; flex-shrink: 0;
+    }
+
+    .protection-summary { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .summary-card {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 10px; padding: 12px 14px; border-radius: 10px;
+        border: 1px solid #e0e7ee; background: #fff;
+    }
+    .summary-card .summary-label { font-size: 13px; color: #555; flex: 1; }
+    .summary-card .summary-value { font-size: 15px; font-weight: bold; color: #333; white-space: nowrap; }
+    .summary-card.main {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border-color: #90caf9;
+    }
+    .summary-card.main .summary-label { color: #0d47a1; font-weight: bold; }
+    .summary-card.main .summary-value { color: #0d47a1; font-size: 18px; }
+    .summary-card.bonus {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-color: #a5d6a7;
+    }
+    .summary-card.bonus .summary-label { color: #1b5e20; font-weight: bold; }
+    .summary-card.bonus .summary-value { color: #1b5e20; font-size: 16px; }
+
+    /* компактнее результаты на узких экранах */
+    @media (max-width: 480px) {
+        .result-row { font-size: 14px; margin-bottom: 8px; gap: 8px; }
+        .result-row.total { font-size: 17px; margin-top: 12px; padding-top: 12px; }
+        .results { padding: 14px; margin-top: 16px; }
+        .calc-grid { gap: 8px; }
+    }
 </style>
 </head>
 <body>
@@ -851,72 +908,79 @@ function renderChildPriority(el) {
             </div>
         </div>
 
-        <div class="table-wrap">
-            <table class="results-table">
-                <thead>
-                    <tr>
-                        <th colspan="2">Обязательная страховая защита</th>
-                        <th class="text-right">Сумма взноса по риску</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Сумма накоплений ребёнка</td>
-                        <td class="highlight text-right" id="cp-res-acc">0 BYN</td>
-                        <td class="text-right" id="cp-res-risk-acc">0 BYN</td>
-                    </tr>
-                    <tr>
-                        <td>Инвалидность родителя (1 и 2 группы)</td>
-                        <td class="text-right" id="cp-res-parent-dis">0 BYN</td>
-                        <td class="text-right" id="cp-res-cost-parent-dis">0 BYN</td>
-                    </tr>
-                    <tr>
-                        <td>Уход из жизни родителя</td>
-                        <td class="text-right" id="cp-res-parent-death">0 BYN</td>
-                        <td class="text-right" id="cp-res-cost-parent-death">0 BYN</td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">Дополнительная страховая защита</th>
-                        <th></th>
-                    </tr>
-                    <tr>
-                        <td>Вред здоровью ребёнка (травмы)</td>
-                        <td class="text-right" id="cp-res-child-injury">0 BYN</td>
-                        <td class="text-right" id="cp-res-cost-child-injury">0 BYN</td>
-                    </tr>
-                    <tr>
-                        <td>Инвалидность ребёнка</td>
-                        <td class="text-right" id="cp-res-child-dis">0 BYN</td>
-                        <td class="text-right" id="cp-res-cost-child-dis">0 BYN</td>
-                    </tr>
-                    <tr>
-                        <td>Уход из жизни ребёнка</td>
-                        <td class="text-right" id="cp-res-child-death">0 BYN</td>
-                        <td class="text-right" id="cp-res-cost-child-death">0 BYN</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="protection-section">
+            <div class="protection-section-title">Обязательная защита</div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Сумма накоплений ребёнка</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-risk-acc">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-acc">0 BYN</div>
+            </div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Инвалидность родителя (1 и 2 группы)</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-dis">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-parent-dis">0 BYN</div>
+            </div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Уход из жизни родителя</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-death">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-parent-death">0 BYN</div>
+            </div>
         </div>
 
-        <div class="table-wrap">
-            <table class="results-table">
-                <tr class="bg-blue">
-                    <td class="highlight">Общая страховая сумма</td>
-                    <td class="text-right highlight" id="cp-res-total-protection">0 BYN</td>
-                </tr>
-                <tr class="bg-blue">
-                    <td class="highlight">Страховой взнос (в месяц)</td>
-                    <td class="text-right highlight" id="cp-res-premium-view">0 BYN</td>
-                </tr>
-                <tr>
-                    <td>Общий страховой взнос за весь срок</td>
-                    <td class="text-right" id="cp-res-total-premium">0 BYN</td>
-                </tr>
-                <tr class="bg-total">
-                    <td>Налоговый вычет (13%)</td>
-                    <td class="text-right" id="cp-res-tax">0 BYN</td>
-                </tr>
-            </table>
+        <div class="protection-section">
+            <div class="protection-section-title additional">Дополнительная защита</div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Вред здоровью ребёнка (травмы)</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-injury">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-child-injury">0 BYN</div>
+            </div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Инвалидность ребёнка</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-dis">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-child-dis">0 BYN</div>
+            </div>
+
+            <div class="protection-card">
+                <div class="protection-info">
+                    <div class="protection-name">Уход из жизни ребёнка</div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-death">0 BYN</span></div>
+                </div>
+                <div class="protection-value" id="cp-res-child-death">0 BYN</div>
+            </div>
+        </div>
+
+        <div class="protection-summary">
+            <div class="summary-card main">
+                <span class="summary-label">Общая страховая сумма</span>
+                <span class="summary-value" id="cp-res-total-protection">0 BYN</span>
+            </div>
+            <div class="summary-card">
+                <span class="summary-label">Страховой взнос (в месяц)</span>
+                <span class="summary-value" id="cp-res-premium-view">0 BYN</span>
+            </div>
+            <div class="summary-card">
+                <span class="summary-label">Взнос за весь срок</span>
+                <span class="summary-value" id="cp-res-total-premium">0 BYN</span>
+            </div>
+            <div class="summary-card bonus">
+                <span class="summary-label">Налоговый вычет (13%)</span>
+                <span class="summary-value" id="cp-res-tax">0 BYN</span>
+            </div>
         </div>
 
         <div class="note">* 100% совпадение с Excel. Использованы точные таблицы рисков для мужчин и женщин.</div>
@@ -971,22 +1035,22 @@ function renderChildPriority(el) {
         const fmt = (num) => num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         $('#cp-res-acc').innerText = fmt(accumulation) + ' BYN';
-        $('#cp-res-risk-acc').innerText = fmt(savingsCost) + ' BYN';
+        $('#cp-res-risk-acc').innerText = fmt(savingsCost) + ' BYN/мес';
 
         $('#cp-res-parent-dis').innerText = fmt(accumulation) + ' BYN';
-        $('#cp-res-cost-parent-dis').innerText = fmt(costs.parentDis) + ' BYN';
+        $('#cp-res-cost-parent-dis').innerText = fmt(costs.parentDis) + ' BYN/мес';
 
         $('#cp-res-parent-death').innerText = fmt(accumulation) + ' BYN';
-        $('#cp-res-cost-parent-death').innerText = fmt(costs.parentDeath) + ' BYN';
+        $('#cp-res-cost-parent-death').innerText = fmt(costs.parentDeath) + ' BYN/мес';
 
         $('#cp-res-child-injury').innerText = fmt(accumulation * 0.5) + ' BYN';
-        $('#cp-res-cost-child-injury').innerText = fmt(costs.childInjury) + ' BYN';
+        $('#cp-res-cost-child-injury').innerText = fmt(costs.childInjury) + ' BYN/мес';
 
         $('#cp-res-child-dis').innerText = fmt(accumulation) + ' BYN';
-        $('#cp-res-cost-child-dis').innerText = fmt(costs.childDis) + ' BYN';
+        $('#cp-res-cost-child-dis').innerText = fmt(costs.childDis) + ' BYN/мес';
 
         $('#cp-res-child-death').innerText = fmt(accumulation) + ' BYN';
-        $('#cp-res-cost-child-death').innerText = fmt(costs.childDeath) + ' BYN';
+        $('#cp-res-cost-child-death').innerText = fmt(costs.childDeath) + ' BYN/мес';
 
         $('#cp-res-total-protection').innerText = fmt(totalProtection) + ' BYN';
         $('#cp-res-premium-view').innerText = fmt(premium) + ' BYN';
