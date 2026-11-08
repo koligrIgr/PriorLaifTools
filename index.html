@@ -16,7 +16,7 @@
 <title>Мои инструменты</title>
 <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; }
     html, body { height: 100%; }
     body {
         font-family: Arial, sans-serif;
@@ -32,7 +32,7 @@
              padding: 12px 14px; padding-top: calc(12px + env(safe-area-inset-top));
              background: #4F81BD; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     header h1 { font-size: 18px; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #back-btn { display: none; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 22px;
+    #back-btn { display: none; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 22px;
                 width: 40px; height: 40px; border-radius: 10px; cursor: pointer; line-height: 1; flex-shrink: 0; }
     #back-btn.visible { display: block; }
     #back-btn:active { background: rgba(255,255,255,0.28); }
@@ -58,6 +58,7 @@
     .input-group { min-width: 0; }
     label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; font-size: 13px; }
     input, select { width: 100%; padding: 10px 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; }
+    input:focus, select:focus { outline: none; border-color: #4F81BD; box-shadow: 0 0 0 3px rgba(79,129,189,0.15); }
 
     .grid-months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 10px; margin-bottom: 16px;
                    padding: 12px; background: #f9f9f9; border-radius: 10px; border: 1px solid #eee;
@@ -914,7 +915,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Сумма накоплений ребёнка</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-risk-acc">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-risk-acc">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-acc">0 BYN</div>
             </div>
@@ -922,7 +923,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Инвалидность родителя (1 и 2 группы)</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-dis">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-dis">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-parent-dis">0 BYN</div>
             </div>
@@ -930,7 +931,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Уход из жизни родителя</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-death">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-parent-death">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-parent-death">0 BYN</div>
             </div>
@@ -942,7 +943,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Вред здоровью ребёнка (травмы)</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-injury">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-injury">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-child-injury">0 BYN</div>
             </div>
@@ -950,7 +951,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Инвалидность ребёнка</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-dis">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-dis">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-child-dis">0 BYN</div>
             </div>
@@ -958,7 +959,7 @@ function renderChildPriority(el) {
             <div class="protection-card">
                 <div class="protection-info">
                     <div class="protection-name">Уход из жизни ребёнка</div>
-                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-death">0 BYN</span></div>
+                    <div class="protection-meta">Взнос по риску: <span id="cp-res-cost-child-death">0 BYN/мес</span></div>
                 </div>
                 <div class="protection-value" id="cp-res-child-death">0 BYN</div>
             </div>
